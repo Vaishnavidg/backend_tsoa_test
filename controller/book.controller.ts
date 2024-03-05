@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IBook,FormData } from "../interfaces/Book";
+import { IBook, FormData } from "../interfaces/Book";
 
 import { Book } from "../models/book.model";
 
@@ -19,7 +19,10 @@ async function GetAllBookDetails(req: Request, res: Response): Promise<void> {
 async function GetBookDetailsByID(req: Request, res: Response): Promise<void> {
     try {
         const book = await Book.findById(req.params.id);
-        if (!book) { res.status(404).json({ msg: "Book not found" }) }
+        if (!book) {
+            res.status(404).json({ msg: "Book not found" })
+            return
+        }
         // res.json(book);
         res.status(201).json(book);
 
@@ -61,6 +64,7 @@ async function UpdateBookDetail(req: Request, res: Response): Promise<void> {
             res.status(400).json({
                 message: "All required fields are not filled"
             });
+            return
         }
 
         const newBook: IBook = {
@@ -82,7 +86,10 @@ async function UpdateBookDetail(req: Request, res: Response): Promise<void> {
 async function DeleteBookByID(req: Request, res: Response): Promise<void> {
     try {
         const book = await Book.findByIdAndDelete(req.params.id);
-        if (!book) { res.status(404).json({ msg: "Book not found" }) }
+        if (!book) {
+            res.status(404).json({ msg: "Book not found" })
+            return
+        }
         // res.json(book);
         res.status(201).json({ msg: "Book Deleted Successfully", book: book });
 
