@@ -1,9 +1,8 @@
-import express from "express";
+import express, { json } from "express";
 const {ConnectMongoDb,mongoDBURL}= require("./config/db.config");
 require('dotenv').config();
 import cors from 'cors';
-
-const UseRouter = require("./routes/book.route");
+import { RegisterRoutes } from "./build/routes";
 
 // const PORT = process.env.PORT;
 
@@ -22,7 +21,7 @@ app.use(express.json());
 
 //Middleware for handling CORS POLICY
 //option1: Allow all Origins with default of cors(*) 
-app.use(cors());
+// app.use(cors());
 //option2: Allow Custom Origins
 // app.use(
 //     cors({
@@ -34,12 +33,13 @@ app.use(cors());
 
 
 //Routes
-app.get('/',(req,res)=>{
-    // console.log(req);
-    return res.status(201).end("Book Store Project");
-})
+// app.get('/',(req,res)=>{
+//     // console.log(req);
+//     return res.status(201).end("Book Store Project");
+// })
 
-app.use("/books",UseRouter);
+// app.use(json());
+RegisterRoutes(app);
 
 app.listen(PORT,()=>{
     console.log("Server Started !!");
