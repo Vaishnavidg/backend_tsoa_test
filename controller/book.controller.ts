@@ -2,12 +2,32 @@
 import { IBook, FormData, UpdateDeleteResponse } from "../interfaces/Book";
 
 import { Book } from "../models/book.model";
-import { Body, Controller, Delete, Get, Path, Post, Put, Route, SuccessResponse, Response } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Put, Route, SuccessResponse, Response, Tags } from "tsoa";
 import { BookService } from "../service/book.service";
 import { errorMessages, responseCodes, responseMessages } from "../enums/books";
+import { controller } from "inversify-express-utils";
+import { inject } from "inversify";
 
 @Route("/")
+@controller("/")
+@Tags('books')
 export class BookController extends Controller {
+    //defines the type of bookservice
+    // contructor is used to initialise the properties of object
+    private bookservice: BookService;
+  /**
+  *
+  * @param {BookService} bookservice
+  */
+//   @inject(BookService)
+//   private bookservice: BookService;
+    constructor(
+        @inject(BookService) bookservice,
+    ) {
+        super();
+        this.bookservice = bookservice;
+        console.log(bookservice);
+    }
 
     /**
      * Returns a list of the books with all details present in the DB
@@ -16,10 +36,11 @@ export class BookController extends Controller {
     @SuccessResponse("200", "OK")
     @Get("/")
     @Response(responseCodes.OK, responseMessages.OK)
-	@Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
-	@Response(responseCodes.ERROR, responseMessages.ERROR)
-    public async GetAllBookDetails(): Promise<IBook[]> {
-        return await BookService.getAllBooks();
+    @Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
+    @Response(responseCodes.ERROR, responseMessages.ERROR)
+    async GetAllBookDetails(): Promise<IBook[]> {
+        return await this.bookservice.getAllBooks();
+
     }
 
     /**
@@ -31,25 +52,25 @@ export class BookController extends Controller {
     @SuccessResponse("201", "Created")
     @Post("/")
     @Response(responseCodes.CREATED, responseMessages.CREATED)
-	@Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
-	@Response(responseCodes.ERROR, responseMessages.ERROR)
-    public async AddBookDetails(@Body() requestData: FormData): Promise<IBook> {
-        return await BookService.addBookDetails(requestData);
+    @Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
+    @Response(responseCodes.ERROR, responseMessages.ERROR)
+    async AddBookDetails(@Body() requestData: FormData): Promise<IBook> {
+        return await this.bookservice.addBookDetails(requestData);
     }
 
     /**
-	 * Returns a brand based on the entered/selected ID
-	 * @param {string} id The id of the brand for which details are required
-	 * @return {IBook} an object with all details of the brand
-	 */
-    @SuccessResponse("201", "OK") 
+     * Returns a brand based on the entered/selected ID
+     * @param {string} id The id of the brand for which details are required
+     * @return {IBook} an object with all details of the brand
+     */
+    @SuccessResponse("200", "OK")
     @Get("/{id}")
     @Response(responseCodes.OK, responseMessages.OK)
-	@Response(responseCodes.NOT_FOUND, errorMessages.BRAND_NOT_FOUND)
-	@Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
-	@Response(responseCodes.ERROR, responseMessages.ERROR)
-    public async GetBookDetailsByID(@Path() id: string): Promise<IBook | null> {
-        return await BookService.getBookById(id);
+    @Response(responseCodes.NOT_FOUND, errorMessages.BRAND_NOT_FOUND)
+    @Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
+    @Response(responseCodes.ERROR, responseMessages.ERROR)
+    async GetBookDetailsByID(@Path() id: string): Promise<IBook | null> {
+        return await this.bookservice.getBookById(id);
     }
 
 
@@ -60,12 +81,12 @@ export class BookController extends Controller {
      * @return {UpdateDeleteResponse} Confirmation of successful update
      */
     @Put("/{id}")
-    @SuccessResponse("201", "OK")
+    @SuccessResponse("200", "OK")
     @Response(responseCodes.OK, responseMessages.OK)
-	@Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
-	@Response(responseCodes.ERROR, responseMessages.ERROR)
-    public async UpdateBookDetail(@Path() id: string, @Body() requestData: FormData): Promise<UpdateDeleteResponse> {
-        return await BookService.updateBookDetail(id, requestData);
+    @Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
+    @Response(responseCodes.ERROR, responseMessages.ERROR)
+    async UpdateBookDetail(@Path() id: string, @Body() requestData: FormData): Promise<UpdateDeleteResponse> {
+        return await this.bookservice.updateBookDetail(id, requestData);
     }
 
 
@@ -74,13 +95,13 @@ export class BookController extends Controller {
      * @param {string} id The id of the brand to be deleted
      * @return {UpdateDeleteResponse} Confirmation of successful deletion
      */
-    @SuccessResponse("201", "Book Deleted Successfully")
+    @SuccessResponse("204", "Book Deleted Successfully")
     @Delete("/{id}")
     @Response(responseCodes.OK, responseMessages.OK)
     @Response(responseCodes.NOT_FOUND, errorMessages.BRAND_NOT_FOUND)
     @Response(responseCodes.BAD_REQUEST, responseMessages.BAD_REQUEST)
-    @Response(responseCodes.ERROR, responseMessages.ERROR) 
-    public async DeleteBookDetail(@Path() id: string): Promise<UpdateDeleteResponse> {
-        return await BookService.deleteBookByID(id)
+    @Response(responseCodes.ERROR, responseMessages.ERROR)
+    async DeleteBookDetail(@Path() id: string): Promise<UpdateDeleteResponse> {
+        return await this.bookservice.deleteBookByID(id)
     }
 }

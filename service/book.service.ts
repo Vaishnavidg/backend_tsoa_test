@@ -1,14 +1,16 @@
+import { injectable } from "inversify";
 import { errorMessages, responseCodes, responseMessages } from "../enums/books";
 import { IBook, FormData, UpdateDeleteResponse } from "../interfaces/Book";
 import { Book } from "../models/book.model";
 
+@injectable()
 export class BookService {
 
     /**
         * get all books 
         * @return Array of {IBook}
         */
-    public static async getAllBooks(): Promise<IBook[]> {
+    async getAllBooks(): Promise<IBook[]> {
         try {
             return await Book.find({});
         } catch (error: any) {
@@ -21,7 +23,7 @@ export class BookService {
          * @param {FormData} bookData
          * @return {IBook}
          */
-    public static async addBookDetails(bookData: FormData): Promise<IBook> {
+    async addBookDetails(bookData: FormData): Promise<IBook> {
         try {
             return await Book.create(bookData);
         } catch (error: any) {
@@ -34,7 +36,7 @@ export class BookService {
         * @param {string} id
         * @return {IBook}
         */
-    public static async getBookById(id: string): Promise<IBook | null> {
+    async getBookById(id: string): Promise<IBook | null> {
         try {
             return await Book.findById(id);
         } catch (error: any) {
@@ -47,7 +49,7 @@ export class BookService {
          * @param {FormData} bookData
          * @return {data}
          */
-    public static async updateBookDetail(id: string, bookData: FormData): Promise<UpdateDeleteResponse> {
+    async updateBookDetail(id: string, bookData: FormData): Promise<UpdateDeleteResponse> {
         const data: {
             response: any;
             status: any;
@@ -75,7 +77,7 @@ export class BookService {
      * @param {string} id
      * @return {data}
      */
-    public static async deleteBookByID(id: string): Promise<UpdateDeleteResponse> {
+    async deleteBookByID(id: string): Promise<UpdateDeleteResponse> {
         const data: {
             response: any;
             status: any;
